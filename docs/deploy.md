@@ -8,7 +8,11 @@ Checklist para colocar uma instância nova (deste template) no ar para um client
 2. Aplicar as migrations de `supabase/migrations/` (0001 a 0008, em ordem) no projeto novo.
 3. Confirmar que os 3 jobs do `pg_cron` ficaram ativos: `select jobname from cron.job;` deve listar `publish-scheduled-content`, `purge-trash`, `purge-rate-limit`. Se não aparecer nada, a extensão `pg_cron` pode não estar habilitada no projeto — habilitar em Database → Extensions.
 4. Criar os buckets de storage com as policies da migration 0007 (`public-images`, `public-pdfs`, `public-videos`, `private-assets`) — a migration já cria tudo, só confirmar em Storage que os 4 aparecem.
-5. Criar o usuário admin com `scripts/create-admin-user.ts` (requer `SUPABASE_SERVICE_ROLE_KEY` e `NEXT_PUBLIC_SUPABASE_URL` no ambiente local).
+5. Criar o usuário admin (requer `NEXT_PUBLIC_SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` no `.env.local` deste cliente):
+   ```bash
+   npx tsx scripts/create-admin-user.ts email@docliente.com "senha-temporaria"
+   ```
+   O script já confirma o e-mail e cria a linha em `admin_profiles` — login funciona na hora, sem passo extra no dashboard de Auth.
 6. **Plano Free do Supabase pausa o projeto após ~7 dias sem uso**, o que para os jobs de `pg_cron`. Avaliar upgrade para o plano Pro antes do cliente ir ao ar de verdade, ou orientar o cliente sobre a limitação.
 
 ## 2. Env vars (Vercel → Project → Settings → Environment Variables)
