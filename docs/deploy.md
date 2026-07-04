@@ -5,8 +5,8 @@ Checklist para colocar uma instância nova (deste template) no ar para um client
 ## 1. Supabase (banco novo, exclusivo deste cliente)
 
 1. Criar um projeto novo em supabase.com/dashboard — **nunca reaproveitar o projeto de outro cliente**.
-2. Aplicar as migrations de `supabase/migrations/` (0001 a 0008, em ordem) no projeto novo.
-3. Confirmar que os 3 jobs do `pg_cron` ficaram ativos: `select jobname from cron.job;` deve listar `publish-scheduled-content`, `purge-trash`, `purge-rate-limit`. Se não aparecer nada, a extensão `pg_cron` pode não estar habilitada no projeto — habilitar em Database → Extensions.
+2. Aplicar as migrations de `supabase/migrations/` (0001 a 0009, em ordem) no projeto novo.
+3. Confirmar que os jobs do `pg_cron` ficaram ativos: `select jobname from cron.job;` deve listar `publish-scheduled-content`, `purge-trash`, `purge-rate-limit`, `purge-login-attempts`. Se não aparecer nada, a extensão `pg_cron` pode não estar habilitada no projeto — habilitar em Database → Extensions.
 4. Criar os buckets de storage com as policies da migration 0007 (`public-images`, `public-pdfs`, `public-videos`, `private-assets`) — a migration já cria tudo, só confirmar em Storage que os 4 aparecem.
 5. Criar o usuário admin (requer `NEXT_PUBLIC_SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` no `.env.local` deste cliente):
    ```bash
@@ -18,7 +18,7 @@ Checklist para colocar uma instância nova (deste template) no ar para um client
 ## 2. Env vars (Vercel → Project → Settings → Environment Variables)
 
 - `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` — do projeto Supabase deste cliente (passo 1).
-- `SUPABASE_SERVICE_ROLE_KEY` — idem, chave `service_role` (não a `anon`). Necessária para o formulário de contato gravar mensagens.
+- `SUPABASE_SERVICE_ROLE_KEY` — idem, chave `service_role` (não a `anon`). Necessária para o formulário de contato gravar mensagens e para o rate limit de login.
 - `TURNSTILE_SECRET_KEY` + `NEXT_PUBLIC_TURNSTILE_SITE_KEY` — criar um widget novo em dash.cloudflare.com → Turnstile, com o hostname de produção deste cliente cadastrado em Hostname Management.
 - `NEXT_PUBLIC_SITE_URL` — domínio público final deste cliente (usada em `sitemap.xml`, `robots.txt`, JSON-LD, botões de compartilhamento).
 
@@ -34,4 +34,5 @@ Conectar o repositório do cliente (fork/cópia deste base) no dashboard da Verc
 2. Testar login em `/admin/login` com o usuário criado no passo 1.5.
 3. Testar um ciclo criar → publicar em qualquer módulo, e confirmar que aparece no portal público.
 4. Testar o formulário de contato de ponta a ponta (Turnstile + gravação + rate-limit).
-5. Personalizar em Configurações → Geral (nome do site, logo) e → Aparência (cores da marca do cliente).
+5. Testar o rate limit de login (5 tentativas erradas seguidas devem travar por 45s).
+6. Personalizar em Configurações → Geral (nome do site, logo, favicon) e → Aparência (cores da marca do cliente).

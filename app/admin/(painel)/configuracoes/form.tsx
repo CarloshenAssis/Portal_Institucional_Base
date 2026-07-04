@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { saveSettings, saveTheme } from "./actions";
 import { metaDescriptionLength } from "./settings-utils";
-import { MediaPicker } from "@/components/admin/media-picker";
+import { ImageField } from "@/components/admin/image-field";
 import { HEX, type ThemeRow } from "@/lib/content/theme";
 
 const THEME_FIELDS: { key: keyof ThemeRow; label: string }[] = [
@@ -106,15 +106,19 @@ export function SettingsForm({
       <TabsContent value="geral" className="flex flex-col gap-4 max-w-2xl pt-4">
         <Input placeholder="Nome do portal" value={values.site_name ?? ""} onChange={(e) => set("site_name", e.target.value)} />
         <Input placeholder="Descrição curta" value={values.short_description ?? ""} onChange={(e) => set("short_description", e.target.value)} />
-        <MediaPicker
-          type="imagem"
-          trigger={<button type="button" className="text-sm underline w-fit">Selecionar logo</button>}
-          onSelect={(m) => set("logo_url", m.url)}
+        <ImageField
+          label="Logo"
+          hint="400×120px, PNG com fundo transparente"
+          url={values.logo_url ?? ""}
+          onSelect={(url) => set("logo_url", url)}
+          onClear={() => set("logo_url", "")}
         />
-        <MediaPicker
-          type="imagem"
-          trigger={<button type="button" className="text-sm underline w-fit">Selecionar favicon</button>}
-          onSelect={(m) => set("favicon_url", m.url)}
+        <ImageField
+          label="Favicon"
+          hint="512×512px, quadrada (ícone da aba do navegador)"
+          url={values.favicon_url ?? ""}
+          onSelect={(url) => set("favicon_url", url)}
+          onClear={() => set("favicon_url", "")}
         />
         <Input placeholder="Texto — Política de Privacidade" value={values.footer_privacy_text ?? ""} onChange={(e) => set("footer_privacy_text", e.target.value)} />
         <Input placeholder="Texto — Termos de Uso" value={values.footer_terms_text ?? ""} onChange={(e) => set("footer_terms_text", e.target.value)} />
@@ -160,10 +164,12 @@ export function SettingsForm({
         <span className="text-xs text-muted-foreground">
           {metaDesc.count}/{metaDesc.max} caracteres
         </span>
-        <MediaPicker
-          type="imagem"
-          trigger={<button type="button" className="text-sm underline w-fit">Selecionar imagem Open Graph (1200×630px)</button>}
-          onSelect={(m) => set("seo_og_image_url", m.url)}
+        <ImageField
+          label="Imagem Open Graph"
+          hint="1200×630px (imagem ao compartilhar o link em redes sociais)"
+          url={values.seo_og_image_url ?? ""}
+          onSelect={(url) => set("seo_og_image_url", url)}
+          onClear={() => set("seo_og_image_url", "")}
         />
       </TabsContent>
 
